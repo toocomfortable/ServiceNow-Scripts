@@ -1,0 +1,65 @@
+Client Script
+function onChange(control, oldValue, newValue, isLoading) {
+    if (isLoading || newValue == '') {
+        return;
+    }
+    var ga = new GlideAjax('getmydetails');
+    ga.addParam('sysparm_name', 'getHireDate');
+    ga.addParam('sysparm_req', g_form.getValue('u_hiring_hr_req_id'));
+    ga.getXMLAnswer(showDetails);
+        //hire name = 0
+		//tkid = 1
+		//dept = 2
+		//title = 3
+		//manager =4 
+		//start date = 5
+    function showDetails(answer) {
+        //var answer = response.responseXML.documentElement.getAttribute("answer");
+        answer = JSON.parse(answer); 
+        //g_form.addInfoMessage('Request = ' + answer);
+        for (var a = 0; a < answer.length; a++) { 
+            g_form.setValue('u_hiring_tkid', answer[1]);
+			g_form.setValue('u_requested_for_new_hire', answer[0]);
+			g_form.setValue('u_department', answer[2]);
+			g_form.setValue('u_new_hire_functional_title', answer[3]);
+			g_form.setValue('u_hiring_manager', answer[4]);
+			g_form.setValue('u_hire_start_date', answer[5]);
+			
+        }
+       
+    }
+}
+
+Script include:
+
+var getmydetails = Class.create();
+getmydetails.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+    getHireDate: function() {
+        var req = this.getParameter('sysparm_req');
+        var gr = new GlideRecord('sc_req_item');
+
+        gr.addQuery('request', req);
+        gr.query();
+        var array = [];
+		//hire name = 0
+		//tkid = 1
+		//dept = 2
+		//title = 3
+		//manager =4 
+		//start date = 5
+        if (gr.next()) {
+            array.push(gr.variables.u_hiring_name.toString());
+            array.push(gr.variables.u_hiring_tkid.getDisplayValue().toString());
+			array.push(gr.variables.u_hiring_dept.toString());
+			array.push(gr.variables.u_hiring_title.toString());
+			array.push(gr.variables.u_requested_for.toString());
+			array.push(gr.variables.u_hiring_start_date.getDisplayValue().toString());
+			
+			
+        }
+        return JSON.stringify(array);
+        //return json.encode(results);//
+
+    },
+    type: 'getmydetails'
+});
