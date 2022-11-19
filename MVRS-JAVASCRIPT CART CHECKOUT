@@ -1,0 +1,21 @@
+var mrvsData = {
+    variableString1 : "string",
+    booleanValue1 : true
+};
+
+var cart = new sn_sc.CartJS();
+		var item =
+		{
+		'sysparm_id': '3f0c47491b325510e9dbcb35624bcb61', //sysid of Online Booking Appointments
+		'sysparm_quantity': '1',
+		'variables':{
+		'user': 'Abel Tuter',
+		'calendar': 'ServiceNow Support ',
+		'opened_by': 'Pankaj Sharma',
+        'users_for_access': '[{"user":"f7fb8bafdbe545101e836682ca9619c6", "access_level":"Viewer"},{"user":"1e844c23dbae22006f3cfbb9af96196f", "access_level":"Team Member"}]'
+		}};
+		var cartDetails = cart.addToCart(item);
+		gs.info(cartDetails);
+		var checkoutInfo = cart.checkoutCart();
+		gs.info(checkoutInfo);	
+	
