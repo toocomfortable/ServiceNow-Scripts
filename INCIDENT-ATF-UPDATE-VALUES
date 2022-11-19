@@ -1,0 +1,37 @@
+(function(outputs, steps, stepResult, assertEqual) {
+    // add test script here
+	
+	var incRec = new GlideRecord('incident');
+var STEP_3_SYS_ID='288cac7e1be611102be7a60b234bcb17'; // step 7
+var step_3_output = steps(STEP_3_SYS_ID).record_id;	
+	//incRec.addQuery ('sys_id', step_3_output);
+	//incRec.query();
+	//if (incRec.next()) {
+	incRec.get(step_3_output); // sys_id of step 7
+
+	//incRec.sys_created_on = gs.daysAgo(2);
+	//incRec.due_date = gs.daysAgo (2);
+	//gr.update ();
+	
+	//gs.log ("Found Incident" + incRec.number);
+	//gs.log ("Found Incident" + incRec.sys_created_on);
+	//gs.log ("Found Incident" + incRec.due_date);
+	
+	outputs.table = 'incident';
+	outputs.record_id = incRec.number;   
+	
+	stepResult.setOutputMessage("Successfully Found Incident record " +incRec.number);
+	stepResult.setOutputMessage("Incident created on " + incRec.sys_created_on);
+	stepResult.setOutputMessage("Incident due on " + incRec.due_date);
+	
+	var gr = new GlideRecord('incident');
+	gr.addQuery('number', incRec.number);
+	gr.query();
+	if (gr.next()){
+		gr.sys_created_on = gs.daysAgo(2);
+		gr.due_date= gs.daysAgo(2);
+		gr.u_sla_breached = 'true';
+		gr.update();
+return true;
+	}
+	
