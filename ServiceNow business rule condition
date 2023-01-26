@@ -1,0 +1,11 @@
+/// If Install Status changes to 'In Stock', or 'In Use' clear the department field.
+//current.department = '';
+//gs.addInfoMessage(gs.getMessage('Asset \'Department\' was cleared due to asset state changing to \'In Stock\'.'));//
+// In Stock = 6 , In Use = 1
+if (current.install_status == '6' && previous.install_status == '1') {
+    current.department = '';
+	gs.addInfoMessage(gs.getMessage('Asset \'Department\' was cleared due to asset state changing to from \'In Stock\' to \'In Use\'.'));
+} else if (current.install_status == '1' && previous.install_status == '6') {
+    current.department = '';
+	gs.addInfoMessage(gs.getMessage('Asset \'Department\' was cleared due to asset state changing to from \'In Use\' to \'In Stock\'.'));
+}
