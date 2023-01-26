@@ -1,0 +1,58 @@
+(function execute(inputs, outputs) {
+    // ... code ...
+  	var entries = [];
+ 	 var users = [];
+  var sysarray = [];
+  	var i = 0;
+    gr = new GlideRecord('syslog');
+    gr.addEncodedQuery("messageSTARTSWITHExternalAuth: provider_user_map is de-activated for user^sys_created_by=azuresamlsync^sys_created_onBETWEENjavascript:gs.beginningOfLastMonth()@javascript:gs.endOfThisMonth()");
+    gr.query();
+    while(gr.next()){
+    var messages = gr.message;
+    var msgstr = messages.toString();
+    var sysid = msgstr.slice(57,89);
+    var date = gr.sys_created_on;
+       sysarray.push(sysid.toString());
+    //sysarray.push(date.getDisplayValue());
+   
+    //var sln = msgstr.length;
+    //gs.print(sysid);
+    var entry = {};
+    //entry.msg = sysid + " " + date;
+    //user.lastname = date;
+    entries[i] = entry;
+     entry.msg = sysid + " " + date;
+    i+= 1;
+    }
+
+   for (var a =0; a <sysarray.length; a++){
+    var deactuser = sysarray[a];
+    grSys = new GlideRecord('sys_user');
+    grSys.addQuery('sys_id',deactuser.toString()); //query the sys_id and the value from the first query. this is not working.
+    grSys.query();
+    if(grSys.next()){
+    var user = {}
+    user.firstname = grSys.first_name.toString();
+    user.lastname = grSys.last_name.toString();
+    user.login= grSys.u_login_id.toString();
+    user.userid = grSys.sys_id.toString();
+    users.push(user);
+    }
+
+   var combinedarray = entries.map(function(obj,index)  {
+    return [obj,users[index]];
+   });
+     
+     var arrayOfStrings = combinedarray.map(function(arr) {
+  	return arr.map(function(obj) {
+    return JSON.stringify(obj);
+  }).join('\n');
+});
+
+   }
+ outputs.entries = entries;
+ outputs.users = users;
+ outputs.combinedarray = arrayOfStrings.join('\n\n');
+}
+    )(inputs, outputs);
+    
