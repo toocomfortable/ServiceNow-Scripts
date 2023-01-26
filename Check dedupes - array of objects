@@ -1,0 +1,36 @@
+(function execute(inputs, outputs) {
+  
+    var serialNumbers = [];
+    var i = 0;
+    var count = new GlideAggregate('cmdb_ci');
+
+    count.addEncodedQuery('sys_class_name=cmdb_ci_computer^serial_numberISNOTEMPTY');
+    count.addAggregate('COUNT', 'serial_number');
+    count.query();
+
+    while (count.next()) {
+
+        var sn = count.serial_number;
+        var snCount = count.getAggregate('COUNT', 'serial_number');
+        if (snCount > 1) {
+            serialNumbers[i++] = new String(sn);
+        }
+    }
+
+    // Use another GlideRecord query to retrieve the duplicate CIs
+    var gr = new GlideRecord('cmdb_ci_computer');
+  	var duplicatecis = [];
+    gr.addEncodedQuery('serial_numberIN'+serialNumbers.join(','));
+    gr.query();
+    while(gr.next()){
+      var duplicateci = {}
+      duplicateci.serialnumber = gr.serial_number.toString();
+      duplicatecis.push(duplicateci);
+        //duplicateCIs.push({serial_number:gr.serial_number.getDisplayValue()});
+    }
+  //gs.info(JSON.stringify(duplicateCIs));
+ 
+        //outputs.array = JSON.stringify(duplicateCIs);
+  		//outputs.array = duplicateCIs;
+  outputs.duplicatecis = duplicatecis;
+})(inputs, outputs);
