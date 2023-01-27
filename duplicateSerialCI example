@@ -1,0 +1,33 @@
+(function getDuplicateSerialCIs() {
+    var serialNumbers = [];
+    var i = 0;
+    var count = new GlideAggregate('cmdb_ci');
+
+    count.addEncodedQuery('sys_class_name=cmdb_ci_computer^serial_numberISNOTEMPTY');
+    count.addAggregate('COUNT', 'serial_number');
+    count.query();
+
+    while (count.next()) {
+
+        var sn = count.serial_number;
+        var snCount = count.getAggregate('COUNT', 'serial_number');
+        if (snCount > 1) {
+            serialNumbers[i++] = new String(sn);
+        }
+    }
+
+    // Use another GlideRecord query to retrieve the duplicate CIs
+    var gr = new GlideRecord('cmdb_ci_computer');
+    gr.addEncodedQuery('serial_numberIN'+serialNumbers.join(','));
+    gr.query();
+    var duplicateCIs = []
+    while(gr.next()){
+        //if po_number field is null, delete the record
+        if(gr.po_number == null){
+            gr.deleteRecord();
+        }else{
+        duplicateCIs.push({name:gr.name, serial_number:gr.serial_number, po_number:gr.po_number});
+        }
+    }
+    return duplicateCIs;
+})();
