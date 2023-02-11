@@ -1,5 +1,35 @@
+var ctSysID = current.getUniqueValue();
+var sigImageTable = new GlideRecord('signature_image');
+sigImageTable.addQuery('document', ctSysID);
+sigImageTable.query();
 
+if (sigImageTable.next()) {
+  var attachmentSysID = sigImageTable.sys_id;
+  gs.print("The sys_id of the attachment is: " + attachmentSysID);
+} else {
+  gs.print("No attachment was found with the specified catalog task sys_id.");
+}
 
+// Create a GlideRecord object for the Attachment table
+var attachmentGr = new GlideRecord("sys_attachment");
+
+// Add a query condition to retrieve only attachments related to the catalog task record
+attachmentGr.addQuery("table_sys_id", attachmentSysID);
+
+// Run the query
+attachmentGr.query();
+
+// Check if there are any attachments found
+if (attachmentGr.hasNext()) {
+  // Loop through the attachments and retrieve the sys_id
+  while (attachmentGr.next()) {
+    var attachment = attachmentGr.sys_id;
+    gs.info("Attachment sys_id: " + attachment);
+  }
+} else {
+  // No attachments found for the catalog task
+  gs.info("No attachments found for catalog task sys_id: " + ctSysID);
+}
 
 var params = {
     fillablePdfSysId: '6a5b35f31bfca910fd0e97d58d4bcbbc',
@@ -27,7 +57,7 @@ var signature = {
     topMargin: 500,
     boxWidth: 125,
     boxHeight: 125,
-    attachmentImageSysId: '737bd7f31b38e910fd0e97d58d4bcbaa'
+    attachmentImageSysId: attachment
 };
 
 var pdfSignRequestor = new sn_pdfgeneratorutils.PdfMergeSignRequestor();
