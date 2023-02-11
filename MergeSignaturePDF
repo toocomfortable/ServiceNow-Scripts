@@ -1,0 +1,45 @@
+
+
+
+var params = {
+    fillablePdfSysId: '6a5b35f31bfca910fd0e97d58d4bcbbc',
+    targetTableName: current.getTableName(),
+    targetRecordSysId: current.getUniqueValue(),
+    targetPdfName: 'NewPDF1' + '.pdf'
+};
+
+params.fieldMap = {
+    requestor: current.variables.u_requested_for.getDisplayValue(),
+    device_model: current.variables.u_device_model.getDisplayValue(),
+    accessory: 'Company X',
+    phone_number: current.variables.u_phone_number.getDisplayValue(),
+    imei: current.variables.u_IMEI_number.getDisplayValue(),
+    iccid: current.variables.u_ICCID_number.getDisplayValue(),
+    tkid: current.variables.u_requested_for.employee_number.getDisplayValue(),
+    task: current.number,
+    date: String(new GlideDate().getByFormat('dd-MM-yyyy'))
+};
+
+
+var signature = {
+    pageNumber: 1,
+    leftMargin: 200,
+    topMargin: 500,
+    boxWidth: 125,
+    boxHeight: 125,
+    attachmentImageSysId: '737bd7f31b38e910fd0e97d58d4bcbaa'
+};
+
+var pdfSignRequestor = new sn_pdfgeneratorutils.PdfMergeSignRequestor();
+pdfSignRequestor.addSignatureMapping(signature.pageNumber, signature.leftMargin, signature.topMargin, signature.boxWidth, signature.boxHeight, signature.attachmentImageSysId);
+
+var additionalParams = {
+    FlattenType: 'fully_flatten' // donot_flatten // partially_flatten // fully_flatten
+};
+
+var v = new sn_pdfgeneratorutils.PDFGenerationAPI();
+
+var result = v.fillFieldsAndMergeSignature(params.fieldMap, params.fillablePdfSysId, params.targetTableName, params.targetRecordSysId, pdfSignRequestor, params.targetPdfName, additionalParams);
+gs.info(JSON.stringify(result, null, '\t'));
+
+action.setRedirectURL(current);
