@@ -1,0 +1,17 @@
+var cat_item = '0fe2a227db3c29105d6c68f8139619b6';
+var catVarValues = '';
+var grRequestedItem = new GlideRecord('sc_req_item');
+// grRequestedItem.setLimit(10);
+// grRequestedItem.addEncodedQuery('numberSTARTSWITHRITM0028764');
+grRequestedItem.query();
+if (grRequestedItem.get(cat_item)) {
+    // gs.addInfoMessage('Variables for ' + grRequestedItem.getDisplayValue());
+    // gs.info(JSON.stringify(grRequestedItem.variables, null, 4));
+    for (var prop in grRequestedItem.variables) {
+        if (grRequestedItem.variables.hasOwnProperty(prop)) {
+            var variable = grRequestedItem.variables[prop];
+            catVarValues = catVarValues + prop + ':' + variable + '\n';
+        }
+    }
+}
+gs.info('Summary: \n' + catVarValues);
