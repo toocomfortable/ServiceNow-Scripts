@@ -1,0 +1,21 @@
+var CheckMobileDeviceAssignment = Class.create();
+CheckMobileDeviceAssignment.prototype = Object.extendsObject(AbstractAjaxProcessor, {
+    hasAssignedMobileDevice: function() {
+        //var hasMobileDevice = false;
+        var userName = this.getParameter('sysparm_my_name');
+        var mobileGr = new GlideRecord('x_mobi_c_mobile_device');
+        mobileGr.addQuery('assigned_to', userName);
+        mobileGr.addQuery('model_id.ref_x_mobi_c_mobile_model.x_mobi_c_device_type', 'mobile_hotspot');
+        mobileGr.query();
+
+       // return mobileGr.next();
+    //},
+    if(mobileGr.next()){
+		return true;
+	} else {
+		return false;
+	}
+},
+
+    type: 'CheckMobileDeviceAssignment'
+});
